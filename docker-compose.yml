@@ -1,0 +1,40 @@
+services:
+
+  db:
+    container_name: db
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pgpassword
+      POSTGRES_DB: app_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - default
+    
+  backend:
+    container_name: backend
+    depends_on:
+      - db
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile
+    restart: always
+    env_file:
+      - ./backend/.env.local
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/usr/src/app
+    command: npm run start:dev
+    networks:
+      - default
+
+volumes:
+  db-data: 
+
+networks:
+  default: 
