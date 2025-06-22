@@ -1,7 +1,6 @@
 
-
-export interface Book {
-  id: number;
+export interface IBook {
+  id: string;
   title: string;
   author: string;
   genre?: string;
@@ -13,12 +12,12 @@ export interface Book {
 
 // Usecase Command
 export type BookCreateCommand = Omit<
-  Book,
+  IBook,
   "id" | "createdAt" | "updatedAt"
 >;
 
 export type BookUpdateCommand = Pick<
-  Book,
+  IBook,
   "id"
 > & {
   title?: string;
@@ -27,3 +26,20 @@ export type BookUpdateCommand = Pick<
   publishedYear?: number;
 }
 
+
+export interface BookQueryParams {
+  limit?: number;
+  // offset?: number;
+  cursor?: string;
+}
+
+export interface BookListResult {
+  data: IBook[];
+  metaData: {
+    size: number;
+    total: number;
+    lastCursor?: string | null;
+    hasNextPage?: boolean;
+  }
+
+}

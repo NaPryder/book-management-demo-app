@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 
 
 export class BookCreateDto {
@@ -31,4 +32,23 @@ export class BookUpdateDto {
 
   @IsNumber()
   readonly publishedYear?: number;
+}
+
+
+export class PaginationParamsDto {
+  @IsOptional()
+  @Transform(({ value }) => Number(value))
+  @IsNumber()
+  @Min(0)
+  offset?: number = 1;
+
+  @IsOptional()
+  @Transform(({ value }) => Number(value))
+  @IsNumber()
+  @Min(1)
+  limit?: number = 15;
+
+  @IsOptional()
+  @IsString()
+  cursor?: string;
 }

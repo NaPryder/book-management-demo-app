@@ -1,0 +1,85 @@
+
+# Test for the Book HTTP adapter
+
+# Get all books
+GET http://localhost:8000/api/v1/books?limit=5 HTTP/1.1
+content-type: application/json
+
+###
+
+# Get all books page 2
+GET http://localhost:8000/api/v1/books?limit=7&cursor=27r8s9t0-1u2v-3w4x-5y6z-7a8b9c0d1e2f HTTP/1.1
+content-type: application/json
+
+###
+
+
+
+# Get a book by ID
+GET http://localhost:8000/api/v1/books/ae381192-6b9a-4475-8b48-6a314b549278 HTTP/1.1
+content-type: application/json
+
+###
+
+
+
+# Create a new book with all content
+POST http://localhost:8000/api/v1/books HTTP/1.1
+content-type: application/json
+
+{
+    "title": "New Book Created",
+    "author": "John Doe",
+    "publishedYear": 2025,
+    "genre": "Fiction"
+}
+
+###
+
+
+
+# Check Created a book by ID
+# Replace with the actual ID returned from the previous POST request 
+GET http://localhost:8000/api/v1/books/a999c78d-2400-4183-a6c1-6c716fb46820 HTTP/1.1
+content-type: application/json
+
+###
+
+
+
+# Replace with the actual ID returned from the previous POST request 
+PUT http://localhost:8000/api/v1/books/a999c78d-2400-4183-a6c1-6c716fb46820 HTTP/1.1
+content-type: application/json
+
+{
+    "title": "Updated Book Title",
+    "author": "Jane Doeeee",
+    "publishedYear": 2026,
+    "genre": "Science Fiction"
+}
+
+###
+
+
+
+# Update on invalid book id 
+PUT http://localhost:8000/api/v1/books/no-books HTTP/1.1
+content-type: application/json
+
+{
+    "title": "Updated Book Title",
+    "author": "Jane Doe",
+    "publishedYear": 2026,
+    "genre": "Science Fiction"
+}
+
+###
+
+
+
+# Delete a book by ID
+DELETE http://localhost:8000/api/v1/books/a999c78d-2400-4183-a6c1-6c716fb46820 HTTP/1.1
+content-type: application/json
+###
+
+
