@@ -1,0 +1,45 @@
+# Git
+.gitattributes
+.git
+.gitignore
+
+# CI
+.buildspec.yml
+.buildspec-unit-test.yml
+
+
+# Docker
+docker-compose.yml
+Dockerfile
+Dockerfile.dev
+.docker
+.dockerignore
+
+node_modules
+dist
+coverage
+
+.env.dev
+.idea
+.vscode
+test
+*.md
+
+npm-debug.log
+yarn-error.log
+README.md
+
+*.mp4
+*.tiff
+*.avi
+*.flv
+*.mov
+*.wmv
+
+npm-debug.log
+
+TEST*.xml
+
+*.log
+
+*/.DS_Store

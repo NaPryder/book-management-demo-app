@@ -15,20 +15,20 @@ services:
     networks:
       - default
     
-  backend:
-    container_name: backend
+  server:
+    container_name: server
     depends_on:
       - db
     build:
-      context: ./backend
+      context: ./server
       dockerfile: ./Dockerfile
     restart: always
     env_file:
-      - ./backend/.env.local
+      - ./server/.env.local
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/usr/src/app
+      - ./server:/usr/src/app
     command: npm run start:dev
     networks:
       - default
