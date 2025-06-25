@@ -15,7 +15,7 @@ ___
 
 ## Start With Docker Compose
 ```shell
-docker compose up -d --build
+docker compose up -d --build # run backend and db
 ```
 Make sure that container name "_server_" has run prisma migrate, if it not there's log display
 
@@ -32,7 +32,7 @@ I've prepared some mockup initial book data as sql statement in `./server/initia
 After database is ready, you can run that sql statement in _book_ table
 
 
-### Backend Server
+### Backend Server (Nest JS)
 Implement under hexagonal architecture concept in `./server`
 
 #### Explain ./server/src structure
@@ -57,3 +57,22 @@ app.controller.ts   # Health check
 app.module.ts      
 main.ts             
 ```
+
+
+### Frontend (Nuxt 3)
+
+A modern web application built with [Nuxt 3](https://nuxt.com/) and Vue 3.
+
+- Node.js v20 or later
+#### Running frontend
+```bash
+cd frontend
+```
+
+listening on port 3000
+```bash
+npm run dev
+```
+
+---
+Created by Nachai Paramesthanakorn
