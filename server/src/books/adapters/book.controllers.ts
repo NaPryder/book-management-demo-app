@@ -13,11 +13,12 @@ export class BookController {
 
   @Get("/")
   async getAllBooks(
-    @Query() { limit, cursor }: PaginationParamsDto,
+    @Query() { perPage, page, search }: PaginationParamsDto,
   ) {
     return await this.usecase.getAllBooks({
-      limit: limit,
-      cursor: cursor,
+      perPage,
+      page,
+      search: search?.trim().replace(/\s+/g, " ") ?? "",
     })
   }
 

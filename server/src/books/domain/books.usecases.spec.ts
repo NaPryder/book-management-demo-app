@@ -1,7 +1,7 @@
 
 import { mock } from 'jest-mock-extended';
 import { BookRepository } from './book.repository';
-import { BookCreateCommand, BookListResult, BookUpdateCommand, IBook } from './book.model';
+import { BookCreateCommand, BookListResult, BookQueryParams, BookUpdateCommand, IBook } from './book.model';
 import { Builder } from 'builder-pattern';
 import { fa, faker } from '@faker-js/faker/.';
 import { BookUseCase } from './book.usecases';
@@ -31,66 +31,101 @@ describe('BookUsecases', () => {
       jest.clearAllMocks();
     })
 
-    it('should return a list of books (page 1)', async () => {
-      const mockLastCursor = faker.string.uuid();
-      const mockBooks: BookListResult = {
+    it('should return a list of books (page 0) should be same as page 1', async () => {
+      const params: BookQueryParams = {
+        page: 0,
+        perPage: 3,
+        search: ''
+      }
+      const mockRepositoryResult = {
         data: [
           getFakeBook(),
           getFakeBook(),
-          getFakeBook(mockLastCursor)
+          getFakeBook()
         ],
+        total: 20,
+      }
+      const mockBooks: BookListResult = {
+        data: mockRepositoryResult.data,
         metaData: {
           size: 3,
-          total: 10,
-          lastCursor: mockLastCursor,
+          total: 20,
+          page: 0,
+          perPage: 3,
           hasNextPage: true,
         }
       };
 
-      repository.getAllBooks.mockResolvedValue(mockBooks);
+      repository.getAllBooks.mockResolvedValue(mockRepositoryResult);
 
       const usecase = new BookUseCase(repository)
 
-      const actual = await usecase.getAllBooks({ limit: 10, cursor: null });
+      const actual = await usecase.getAllBooks(params);
 
       expect(actual).toEqual(mockBooks);
-      expect(repository.getAllBooks).toHaveBeenCalledWith({
-        limit: 10,
-        cursor: null
-      });
+      expect(repository.getAllBooks).toHaveBeenCalledWith(0, 3, '');
     });
 
-    it('should return a list of books (page 2)', async () => {
-      const mockCursor = faker.string.uuid();
-      const mockLastCursor = faker.string.uuid();
+    it('should return a list of books (page 1)', async () => {
+      const params: BookQueryParams = {
+        page: 1,
+        perPage: 3,
+      }
+      const mockRepositoryResult = {
+        data: [
+          getFakeBook(),
+          getFakeBook(),
+          getFakeBook()
+        ],
+        total: 20,
+      }
       const mockBooks: BookListResult = {
+        data: mockRepositoryResult.data,
+        metaData: {
+          size: 3,
+          total: 20,
+          page: 1,
+          perPage: 3,
+          hasNextPage: true,
+        }
+      };
+
+      repository.getAllBooks.mockResolvedValue(mockRepositoryResult);
+
+      const usecase = new BookUseCase(repository)
+
+      const actual = await usecase.getAllBooks(params);
+
+      expect(actual).toEqual(mockBooks);
+      expect(repository.getAllBooks).toHaveBeenCalledWith(
+        1,
+        3,
+        '',
+      );
+    });
+
+    it('should return a list of books (invalid page )', async () => {
+      const params: BookQueryParams = {
+        page: -1,
+        perPage: 3,
+      }
+      const mockLastCursor = faker.string.uuid();
+      const mockRepositoryResult = {
         data: [
           getFakeBook(),
           getFakeBook(),
           getFakeBook(mockLastCursor)
         ],
-        metaData: {
-          size: 3,
-          total: 10,
-          lastCursor: mockLastCursor,
-          hasNextPage: true,
-        }
-      };
-
-      repository.getAllBooks.mockResolvedValue(mockBooks);
+        total: 20,
+      }
 
       const usecase = new BookUseCase(repository)
 
-      const actual = await usecase.getAllBooks({ limit: 10, cursor: mockCursor });
+      await expect(usecase.getAllBooks(params)).rejects.toThrow(
+        new BadRequestException(`Invalid page number (${params.page})`)
+      );
 
-      expect(actual).toEqual(mockBooks);
-      expect(repository.getAllBooks).toHaveBeenCalledWith({
-        limit: 10,
-        cursor: mockCursor
-      });
-      expect(actual.data).not.toContainEqual(
-        expect.objectContaining({ id: mockCursor } as IBook) // Ensure calling cursor is not in the result
-      )
+
     });
   })
 
@@ -119,9 +154,12 @@ describe('BookUsecases', () => {
 
       const usecase = new BookUseCase(repository)
 
-      const actual = await usecase.getBookById(fakeId);
+
+      await expect(usecase.getBookById(fakeId)).rejects.toThrow(
+        new BadRequestException(`Invalid book id (${fakeId})`)
+      );
+
       expect(repository.getBookById).toHaveBeenCalledWith(fakeId);
-      expect(actual).toBeNull();
     })
   })
 

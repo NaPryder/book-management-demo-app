@@ -12,11 +12,36 @@ export class BookUseCase {
   ) { }
 
   async getAllBooks(params: BookQueryParams): Promise<BookListResult> {
-    return await this.repository.getAllBooks(params);
+    if (params.page && params.page < 1) {
+      throw new BadRequestException(`Invalid page number (${params.page})`);
+    }
+    const perPage = ((params.perPage && (params.perPage <= 0) ? 20 : params?.perPage)) ?? 20;
+
+    const { data, total } = await this.repository.getAllBooks(
+      params.page,
+      perPage,
+      params?.search ?? ""
+    );
+
+    return {
+      data,
+      metaData: {
+        size: data.length,
+        total,
+        totalPage: Math.ceil(total / perPage),
+        page: params.page,
+        perPage: perPage,
+        hasNextPage: (params.page ?? 1) * (params.perPage ?? 20) < total,
+      }
+    }
   }
 
   async getBookById(id: IBook["id"]) {
-    return await this.repository.getBookById(id);
+    const book = await this.repository.getBookById(id);
+    if (!book) {
+      throw new BadRequestException(`Invalid book id (${id})`);
+    }
+    return book;
   }
 
   async createBook(book: BookCreateCommand) {
@@ -32,10 +57,10 @@ export class BookUseCase {
   }
 
   async deleteBook(id: IBook["id"]) {
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate delay
     if (!await this.repository.getBookById(id)) {
       throw new BadRequestException(`Invalid book id (${id})`);
     }
-
     return await this.repository.deleteBook(id);
   }
 }

@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { BookRepository, bookRepositoryKey } from "../domain/book.repository";
 import { PrismaService } from "src/cores/prisma/prisma.service";
-import { IBook, BookCreateCommand, BookUpdateCommand, BookQueryParams, BookListResult } from "../domain/book.model";
+import { IBook, BookCreateCommand, BookUpdateCommand, BookQueryParams, BookListResult, BookListRepositoryResult } from "../domain/book.model";
 import { Books } from "generated/prisma";
 
 
@@ -23,8 +23,7 @@ export class BookPrismaRepository implements BookRepository {
       updatedAt: book.updatedAt,
     }
   }
-  async getAllBooks(params: BookQueryParams): Promise<BookListResult> {
-    const { limit, cursor } = params;
+  async getAllBooks(page: number, perPage: number, search: string): Promise<BookListRepositoryResult> {
 
     const [count, books] = await this.prisma.$transaction([
       this.prisma.books.count(),
@@ -32,51 +31,37 @@ export class BookPrismaRepository implements BookRepository {
         orderBy: {
           createdAt: "desc",
         },
-        take: limit,
-        // skip: offset,
-        ...(cursor && {
-          skip: 1, // Do not include the cursor itself in the query result.
-          cursor: {
-            bookId: cursor as string,
+        take: perPage,
+        skip: page * perPage,
+        ...(search.length > 0
+          ? {
+            where: {
+              OR: [
+                {
+                  title: {
+                    contains: search,
+                    mode: "insensitive",
+                  }
+                },
+              ]
+            }
           }
-        }),
+          : {}
+        )
+
       }),
     ])
 
     if (books.length === 0) {
       return {
         data: [],
-        metaData: {
-          size: 0,
-          total: count,
-          lastCursor: null,
-          hasNextPage: false,
-        }
+        total: 0,
       }
     }
 
-    const lastBook = books[books.length - 1];
-    const nextPageCursor = lastBook.bookId
-
-    const nextPageBooks = await this.prisma.books.findMany({
-      // Same as before, limit the number of events returned by this query.
-      take: limit,
-      skip: 1, // Do not include the cursor itself in the query result.
-      cursor: {
-        bookId: nextPageCursor,
-      },
-    });
-
-    // const books = await this.prisma.books.findMany(query)
     return {
       data: books.map(this.toBookModel.bind(this)),
-      metaData: {
-        total: count,
-        size: books.length,
-        lastCursor: nextPageCursor,
-        hasNextPage: nextPageBooks.length > 0,
-      }
-
+      total: count,
     }
   }
 

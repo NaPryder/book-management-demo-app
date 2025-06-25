@@ -40,15 +40,15 @@ export class PaginationParamsDto {
   @Transform(({ value }) => Number(value))
   @IsNumber()
   @Min(0)
-  offset?: number = 1;
+  page?: number = 1;
 
   @IsOptional()
   @Transform(({ value }) => Number(value))
   @IsNumber()
   @Min(1)
-  limit?: number = 15;
+  perPage?: number = 15;
 
   @IsOptional()
   @IsString()
-  cursor?: string;
+  search?: string = "";
 }

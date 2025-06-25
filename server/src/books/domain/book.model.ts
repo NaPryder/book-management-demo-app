@@ -28,9 +28,15 @@ export type BookUpdateCommand = Pick<
 
 
 export interface BookQueryParams {
-  limit?: number;
-  // offset?: number;
-  cursor?: string;
+  perPage?: number;
+  page?: number;
+  search?: string;
+}
+
+
+export interface BookListRepositoryResult {
+  data: IBook[];
+  total: number;
 }
 
 export interface BookListResult {
@@ -38,8 +44,9 @@ export interface BookListResult {
   metaData: {
     size: number;
     total: number;
-    lastCursor?: string | null;
-    hasNextPage?: boolean;
+    totalPage: number;
+    page: number;
+    perPage: number;
+    hasNextPage: boolean;
   }
-
 }

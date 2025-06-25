@@ -2,16 +2,24 @@
 # Test for the Book HTTP adapter
 
 # Get all books
-GET http://localhost:8000/api/v1/books?limit=5 HTTP/1.1
+GET http://localhost:8000/api/v1/books?page=0 HTTP/1.1
 content-type: application/json
 
 ###
 
 # Get all books page 2
-GET http://localhost:8000/api/v1/books?limit=7&cursor=27r8s9t0-1u2v-3w4x-5y6z-7a8b9c0d1e2f HTTP/1.1
+GET http://localhost:8000/api/v1/books?page=0&perPage=4 HTTP/1.1
 content-type: application/json
 
 ###
+
+
+# Search Book
+GET http://localhost:8000/api/v1/books?search=the HTTP/1.1
+content-type: application/json
+
+###
+
 
 
 
