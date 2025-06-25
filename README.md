@@ -33,7 +33,9 @@ After database is ready, you can run that sql statement in _book_ table
 
 
 ### Backend Server (Nest JS)
-Implement under hexagonal architecture concept in `./server`
+Implement under hexagonal architecture concept in `./server` 
+
+server is listening on port 8000
 
 #### Explain ./server/src structure
 ```shell
@@ -57,6 +59,9 @@ app.controller.ts   # Health check
 app.module.ts      
 main.ts             
 ```
+
+
+#### Api document is in localhost:8000/docs
 
 
 ### Frontend (Nuxt 3)
